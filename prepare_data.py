@@ -1,17 +1,13 @@
 # flickr30k dataset and create embeddings for each image using CLIP. save captions and embeddings in a json file
-import os
-import json
+
 import numpy as np
 import torch
 from PIL import Image
-from torchvision import transforms
 from tqdm import tqdm
 from transformers import CLIPProcessor, CLIPModel
 from datasets import load_dataset
 import pickle
-import os
 from pathlib import Path
-import torch.nn as nn
 
 
 def load_flickr30k_dataset():
@@ -68,9 +64,9 @@ def create_clip_embeddings():
 
     # Process images in batches
     batch_size = 32
-    save_frequency = 2  # Save after processing this many images
+    save_frequency = 32*64  # Save after processing this many images
     total_processed = 0
-    len_dataset = 4
+    len_dataset = len(dataset)
     print(f"Processing {len(dataset)} images...")
 
     for i in tqdm(range(0, len_dataset, batch_size)):
