@@ -41,3 +41,14 @@ class ClipCaptionModel(nn.Module):
             prefix_projections, caption_embeddings, dim=1)
         output = self.gpt(inputs_embeds=joined_embeddings, attention_mask=mask)
         return output
+
+
+class ClipCaptionPrefix(ClipCaptionModel):
+
+    def parameters(self, recurse: bool = True):
+        return self.projector.parameters()
+
+    def train(self, mode: bool = True):
+        super(ClipCaptionPrefix, self).train(mode)
+        self.gpt.eval()
+        return self
