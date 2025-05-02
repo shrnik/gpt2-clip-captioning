@@ -127,7 +127,7 @@ class Predictor(BasePredictor):
         else:
             image = Image.open(image).convert("RGB")
         processed_images = self.image_processor(
-            images=image, return_tensors="pt")
+            images=image, return_tensors="pt").to(self.device)
         with torch.no_grad():
             prefixes = self.clip_model.get_image_features(**processed_images)
             prefix_embed = self.model.projector(
