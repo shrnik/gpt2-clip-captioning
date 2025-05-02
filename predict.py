@@ -130,7 +130,7 @@ class Predictor(BasePredictor):
             images=image, return_tensors="pt")
         with torch.no_grad():
             prefixes = self.clip_model.get_image_features(**processed_images)
-            prefix_embed = self.model.clip_project(
+            prefix_embed = self.model.projector(
                 prefixes[0]).reshape(1, self.prefix_length, -1)
 
         return generate_beam(
