@@ -74,4 +74,4 @@ if __name__ == "__main__":
     dataset = FlickrDataset(args.data_path, args.prefix_length)
     model = ClipCaptionModel(prefix_length=args.prefix_length)
     train(dataset, model, args, output_dir=args.output_dir,
-          output_prefix=args.output_prefix, epochs=args.epochs)
+          output_prefix="output", epochs=args.epochs)
