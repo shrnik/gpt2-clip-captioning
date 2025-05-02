@@ -121,9 +121,9 @@ class Predictor(BasePredictor):
         self.model = self.model.to(self.device)
 
     def predict(self, image: Path = Input(description="Grayscale input image")):
+        print("image", image)
         if image.startswith("http"):
-            with urlopen(image) as response:
-                image = Image.open(urlopen(image)).convert("RGB")
+            image = Image.open(urlopen(image)).convert("RGB")
         else:
             image = Image.open(image).convert("RGB")
         processed_images = self.image_processor(
