@@ -40,7 +40,7 @@ class FlickrDataset(Dataset):
 
     def pad_tokens(self, item: int):
         tokens = self.captions_tokens[item]
-        padding = self.max_seq_len - tokens.shape[0]
+        padding = self.max_seq_len - len(tokens)
         if padding > 0:
             tokens = torch.cat(
                 (tokens, torch.zeros(padding, dtype=torch.int64) - 1))
