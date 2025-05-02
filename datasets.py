@@ -58,7 +58,7 @@ class FlickrDataset(Dataset):
 
     def __getitem__(self, item: int) -> Tuple[torch.Tensor, ...]:
         tokens, mask = self.pad_tokens(item)
-        prefix = self.prefixes[item]
+        prefix = self.imageEmbeddings[item]
         if self.normalize_prefix:
             prefix = prefix.float()
             prefix = prefix / prefix.norm(2, -1)
