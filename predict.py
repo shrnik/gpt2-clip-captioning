@@ -58,8 +58,11 @@ def generate_beam(
                     0).unsqueeze(1)  # shape: [beam_size, 1]
 
                 generated = generated.expand(beam_size, *generated.shape[1:])
-                tokens = tokens.expand(beam_size, *tokens.shape[1:])
-                tokens = torch.cat((tokens, next_tokens), dim=1)
+                if tokens is None:
+                    tokens = next_tokens
+                else:
+                    tokens = tokens.expand(beam_size, *tokens.shape[1:])
+                    tokens = torch.cat((tokens, next_tokens), dim=1)
             else:
                 # Prevent updating beams that already ended
                 log_probs[is_stopped] = -float('inf')
