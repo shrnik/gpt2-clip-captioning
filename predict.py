@@ -109,10 +109,11 @@ def generate_beam(
 class Predictor(BasePredictor):
     def setup(self):
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
-        self.clip_model = load_clip_model()
+
         self.image_processor = load_clip_processor()
         self.device = torch.device(
             "cuda:0" if torch.cuda.is_available() else "cpu")
+        self.clip_model = load_clip_model().to(self.device)
         self.prefix_length = 6
         self.model = ClipCaptionModel(self.prefix_length)
         self.model.load_state_dict(torch.load(
@@ -130,8 +131,10 @@ class Predictor(BasePredictor):
             images=image, return_tensors="pt").to(self.device)
         with torch.no_grad():
             prefixes = self.clip_model.get_image_features(**processed_images)
+            normalized_embeddings = prefixes / \
+                prefixes.norm(dim=1, keepdim=True)
             prefix_embed = self.model.projector(
-                prefixes[0]).reshape(1, self.prefix_length, -1)
+                normalized_embeddings[0]).reshape(1, self.prefix_length, -1)
 
         return generate_beam(
             self.model,
