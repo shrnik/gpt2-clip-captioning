@@ -120,7 +120,7 @@ class Predictor(BasePredictor):
         self.model = self.model.to(self.device)
 
     def predict(self, image: Path = Input(description="Grayscale input image")):
-        image = Image.open(image_path).convert("RGB")
+        image = Image.open(image).convert("RGB")
         processed_images = self.image_processor(
             images=image, return_tensors="pt")
         with torch.no_grad():
