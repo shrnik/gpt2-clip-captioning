@@ -120,7 +120,7 @@ class Predictor(BasePredictor):
         self.model = self.model.eval()
         self.model = self.model.to(self.device)
 
-    def predict(self, image: Path = Input(description="Grayscale input image")):
+    def predict(self, image: str):
         print("image", image)
         if image.startswith("http"):
             image = Image.open(urlopen(image)).convert("RGB")
