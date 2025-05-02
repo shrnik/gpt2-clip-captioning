@@ -6,6 +6,7 @@ from models import ClipCaptionModel
 from prepare_data import load_clip_model, load_clip_processor
 import io
 import argparse
+from PIL import Image
 
 
 def generate_beam(
@@ -119,7 +120,7 @@ class Predictor(BasePredictor):
         self.model = self.model.to(self.device)
 
     def predict(self, image: Path = Input(description="Grayscale input image")):
-        image = io.imread(image)
+        image = Image.open(image_path).convert("RGB")
         processed_images = self.image_processor(
             images=image, return_tensors="pt")
         with torch.no_grad():
