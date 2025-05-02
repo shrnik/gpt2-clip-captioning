@@ -7,7 +7,7 @@ from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup
 from torch.optim import AdamW
 from torch.nn import functional as nnf
-from datasets import FlickrDataset
+from prepare_datasets import FlickrDataset
 from models import ClipCaptionModel
 import argparse
 
