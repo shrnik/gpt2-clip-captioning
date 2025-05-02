@@ -1,8 +1,8 @@
-from torch import nn
-import torch
-from typing import Tuple, List, Union, Optional
-from transformers import GPT2Tokenizer, GPT2LMHeadModel, AdamW, get_linear_schedule_with_warmup
+from typing import List, Optional, Tuple, Union
 
+import torch
+from torch import nn
+from transformers import GPT2LMHeadModel
 
 T = torch.Tensor
 
