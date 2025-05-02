@@ -116,7 +116,7 @@ class Predictor(BasePredictor):
         self.prefix_length = 6
         self.model = ClipCaptionModel(self.prefix_length)
         self.model.load_state_dict(torch.load(
-            "output/output-005.pt", map_location=torch.device("cpu")))
+            "output/output-005.pt", map_location=self.device))
         self.model = self.model.eval()
         self.model = self.model.to(self.device)
 
