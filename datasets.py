@@ -22,11 +22,11 @@ class FlickrDataset(Dataset):
             self.captions_tokens = []
             max_seq_len = 0
             for caption in self.captions_raw:
-                tokens = self.tokenizer.encode(
-                    caption, dtype=torch.int64)
+                tokens = torch.tensor(self.tokenizer.encode(
+                    caption), dtype=torch.int64)
                 self.captions_tokens.append(tokens)
                 max_seq_len = max(
-                    max_seq_len, len(self.captions_tokens[-1]))
+                    max_seq_len, self.captions_tokens[-1].shape[0])
             with open(f"{data_path[:-4]}_tokens.pkl", 'wb') as f:
                 pickle.dump(
                     [self.captions_tokens, max_seq_len], f)
@@ -40,7 +40,7 @@ class FlickrDataset(Dataset):
 
     def pad_tokens(self, item: int):
         tokens = self.captions_tokens[item]
-        padding = self.max_seq_len - len(tokens)
+        padding = self.max_seq_len - tokens.shape[0]
         if padding > 0:
             tokens = torch.cat(
                 (tokens, torch.zeros(padding, dtype=torch.int64) - 1))
