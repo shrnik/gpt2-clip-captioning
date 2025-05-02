@@ -38,7 +38,7 @@ class ClipCaptionModel(nn.Module):
         prefix_projections = self.projector(
             prefix).view(-1, self.prefix_length, self.gpt_embedding_size)
         joined_embeddings = torch.cat(
-            prefix_projections, caption_embeddings, dim=1)
+            (prefix_projections, caption_embeddings), dim=1)
         output = self.gpt(inputs_embeds=joined_embeddings, attention_mask=mask)
         return output
 
