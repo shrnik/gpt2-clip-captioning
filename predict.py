@@ -7,6 +7,7 @@ from prepare_data import load_clip_model, load_clip_processor
 import io
 import argparse
 from PIL import Image
+from urllib.request import urlopen
 
 
 def generate_beam(
@@ -120,7 +121,11 @@ class Predictor(BasePredictor):
         self.model = self.model.to(self.device)
 
     def predict(self, image: Path = Input(description="Grayscale input image")):
-        image = Image.open(image).convert("RGB")
+        if image.startswith("http"):
+            with urlopen(image) as response:
+                image = Image.open(urlopen(image)).convert("RGB")
+        else:
+            image = Image.open(image).convert("RGB")
         processed_images = self.image_processor(
             images=image, return_tensors="pt")
         with torch.no_grad():
@@ -160,6 +165,7 @@ def main():
 
     # Generate caption
     image_path = Path(args.image)
+
     captions = predictor.predict(
         image=image_path
     )
