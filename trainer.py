@@ -3,7 +3,7 @@ import sys
 
 import torch
 from torch.utils.data import DataLoader
-import tqdm
+from tqdm import tqdm
 from transformers import get_linear_schedule_with_warmup
 from torch.optim import AdamW
 from torch.nn import functional as nnf
