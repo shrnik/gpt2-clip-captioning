@@ -15,6 +15,7 @@ class FlickrDataset(Dataset):
         self.imageEmbeddings = data["embeddings"]
         self.captions_raw = data["captions"]
         self.prefix_length = prefix_length
+        self.normalize_prefix = normalize_prefix
         if os.path.isfile(f"{data_path[:-4]}_tokens.pkl"):
             with open(f"{data_path[:-4]}_tokens.pkl", 'rb') as f:
                 self.captions_tokens, self.max_seq_len = pickle.load(
