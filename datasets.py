@@ -26,7 +26,7 @@ class FlickrDataset(Dataset):
                     caption, dtype=torch.int64)
                 self.captions_tokens.append(tokens)
                 max_seq_len = max(
-                    max_seq_len, self.captions_tokens[-1].shape[0])
+                    max_seq_len, len(self.captions_tokens[-1]))
             with open(f"{data_path[:-4]}_tokens.pkl", 'wb') as f:
                 pickle.dump(
                     [self.captions_tokens, max_seq_len], f)
