@@ -23,7 +23,7 @@ class FlickrDataset(Dataset):
             max_seq_len = 0
             for caption in self.captions_raw:
                 tokens = torch.tensor(self.tokenizer.encode(
-                    caption), dtype=torch.int64)
+                    caption))
                 self.captions_tokens.append(tokens)
                 max_seq_len = max(
                     max_seq_len, self.captions_tokens[-1].shape[0])
