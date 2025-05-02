@@ -164,10 +164,9 @@ def main():
     predictor.beam_size = args.beam_size
 
     # Generate caption
-    image_path = Path(args.image)
 
     captions = predictor.predict(
-        image=image_path
+        image=args.image
     )
 
     # Print results
