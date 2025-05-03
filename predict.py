@@ -103,7 +103,7 @@ class Predictor(BasePredictor):
         self.model = self.model.eval()
         self.model = self.model.to(self.device)
 
-    def predict(self, image: str):
+    def predict(self, image: str, prompt: str):
         print("image", image)
         if image.startswith("http"):
             image = Image.open(urlopen(image)).convert("RGB")
@@ -123,9 +123,10 @@ class Predictor(BasePredictor):
             self.tokenizer,
             embed=None,
             beam_size=self.beam_size,
-            prompt="",
+            prompt=prompt,
             entry_length=60,
             temperature=1.2,
+
         )
 
 
