@@ -121,7 +121,7 @@ class Predictor(BasePredictor):
         return generate_beam(
             self.model,
             self.tokenizer,
-            embed=prefix_embed,
+            embed=None,
             beam_size=self.beam_size,
             prompt="",
             entry_length=60,
@@ -152,6 +152,7 @@ def main():
 
     captions = predictor.predict(
         image=args.image
+        prompt="What's up",
     )
 
     # Print results
