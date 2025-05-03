@@ -151,7 +151,7 @@ def main():
     # Generate caption
 
     captions = predictor.predict(
-        image=args.image
+        image=args.image,
         prompt="What's up",
     )
 
