@@ -15,7 +15,7 @@ import argparse
 def train(dataset: FlickrDataset, model: ClipCaptionModel, args,
           lr: float = 2e-5, warmup_steps: int = 5000, output_dir: str = ".", output_prefix: str = "", epochs: int = 10):
 
-    device = torch.device('cuda:0')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     batch_size = 256
 
     if not os.path.exists(output_dir):

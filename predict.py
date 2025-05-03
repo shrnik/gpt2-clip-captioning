@@ -100,8 +100,8 @@ class Predictor(BasePredictor):
         self.model = ClipCaptionModel(self.prefix_length)
         self.model.load_state_dict(torch.load(
             "output/output-011.pt", map_location=self.device))
-        self.model = self.model.eval()
-        self.model = self.model.to(self.device)
+        self.model.eval()
+        self.model.to(self.device)
 
     def predict(self, image: str, prompt: str):
         print("image", image)
@@ -113,8 +113,10 @@ class Predictor(BasePredictor):
             images=image, return_tensors="pt").to(self.device)
         with torch.no_grad():
             prefixes = self.clip_model.get_image_features(**processed_images)
+            print(prefixes[0].shape)
+            self.gpt_embedding_size = self.model.gpt.transformer.wte.weight.shape[1]
             prefix_embed = self.model.projector(
-                prefixes).view(1, self.prefix_length, -1)
+                prefixes[0]).view(-1, self.prefix_length, self.gpt_embedding_size)
 
         return generate_beam(
             self.model,
