@@ -99,7 +99,7 @@ class Predictor(BasePredictor):
         self.prefix_length = 6
         self.model = ClipCaptionModel(self.prefix_length)
         self.model.load_state_dict(torch.load(
-            "output/output-005.pt", map_location=self.device))
+            "output/output-011.pt", map_location=self.device))
         self.model = self.model.eval()
         self.model = self.model.to(self.device)
 
@@ -113,15 +113,13 @@ class Predictor(BasePredictor):
             images=image, return_tensors="pt").to(self.device)
         with torch.no_grad():
             prefixes = self.clip_model.get_image_features(**processed_images)
-            normalized_embeddings = prefixes / \
-                prefixes.norm(dim=1, keepdim=True)
             prefix_embed = self.model.projector(
-                normalized_embeddings).reshape(1, self.prefix_length, -1)
+                prefixes).view(1, self.prefix_length, -1)
 
         return generate_beam(
             self.model,
             self.tokenizer,
-            embed=None,
+            embed=prefix_embed,
             beam_size=self.beam_size,
             prompt=prompt,
             entry_length=60,
