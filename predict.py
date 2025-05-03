@@ -116,7 +116,7 @@ class Predictor(BasePredictor):
             normalized_embeddings = prefixes / \
                 prefixes.norm(dim=1, keepdim=True)
             prefix_embed = self.model.projector(
-                normalized_embeddings[0]).reshape(1, self.prefix_length, -1)
+                normalized_embeddings).reshape(1, self.prefix_length, -1)
 
         return generate_beam(
             self.model,
