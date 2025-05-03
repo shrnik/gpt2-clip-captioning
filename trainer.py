@@ -16,7 +16,7 @@ def train(dataset: FlickrDataset, model: ClipCaptionModel, args,
           lr: float = 2e-5, warmup_steps: int = 5000, output_dir: str = ".", output_prefix: str = "", epochs: int = 10):
 
     device = torch.device('cuda:0')
-    batch_size = 128
+    batch_size = 256
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
                         default="data/flickr30k_clip_embeddings.pkl")
     parser.add_argument("--output_dir", type=str, default="output")
     parser.add_argument("--prefix_length", type=int, default=6)
-    parser.add_argument("--epochs", type=str, default=6)
+    parser.add_argument("--epochs", type=str, default=12)
     args = parser.parse_args()
 
     dataset = FlickrDataset(args.data_path, args.prefix_length)
