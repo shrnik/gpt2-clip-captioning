@@ -125,7 +125,7 @@ class Predictor(BasePredictor):
             beam_size=self.beam_size,
             prompt="",
             entry_length=60,
-            temperature=1,
+            temperature=1.2,
         )
 
 
