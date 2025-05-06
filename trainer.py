@@ -39,7 +39,7 @@ def train(dataset: FlickrDataset, model: ClipCaptionModel, args,
         progress = tqdm(total=len(train_dataloader), desc=output_prefix)
         if epoch == 2:
             print(">>> Unfreezing GPT-2")
-            for param in model.transformer.parameters():
+            for param in model.gpt.parameters():
                 param.requires_grad = True
             optimizer = AdamW(model.parameters(), lr=lr)
             scheduler = get_linear_schedule_with_warmup(
