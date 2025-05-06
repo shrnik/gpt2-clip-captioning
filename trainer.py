@@ -22,7 +22,10 @@ def train(dataset: FlickrDataset, model: ClipCaptionModel, args,
         os.makedirs(output_dir)
     model = model.to(device)
     model.train()
-    optimizer = AdamW(model.parameters(), lr=lr)
+    for param in model.gpt.parameters():
+        param.requires_grad = False
+    optimizer = AdamW(filter(lambda p: p.requires_grad,
+                      model.parameters()), lr=lr)
     train_dataloader = DataLoader(
         dataset, batch_size=batch_size, shuffle=True, drop_last=True)
     scheduler = get_linear_schedule_with_warmup(
@@ -34,6 +37,15 @@ def train(dataset: FlickrDataset, model: ClipCaptionModel, args,
         print(f">>> Training epoch {epoch}")
         sys.stdout.flush()
         progress = tqdm(total=len(train_dataloader), desc=output_prefix)
+        if epoch == 2:
+            print(">>> Unfreezing GPT-2")
+            for param in model.transformer.parameters():
+                param.requires_grad = True
+            optimizer = AdamW(model.parameters(), lr=lr)
+            scheduler = get_linear_schedule_with_warmup(
+                optimizer, num_warmup_steps=warmup_steps, num_training_steps=epochs *
+                len(train_dataloader)
+            )
         for idx, (tokens, mask, prefix) in enumerate(train_dataloader):
             model.zero_grad()
             tokens, mask, prefix = tokens.to(device), mask.to(
@@ -54,11 +66,10 @@ def train(dataset: FlickrDataset, model: ClipCaptionModel, args,
                     os.path.join(output_dir, f"{output_prefix}_latest.pt"),
                 )
         progress.close()
-        if epoch == epochs - 1:
-            torch.save(
-                model.state_dict(),
-                os.path.join(output_dir, f"{output_prefix}-{epoch:03d}.pt"),
-            )
+        torch.save(
+            model.state_dict(),
+            os.path.join(output_dir, f"{output_prefix}-{epoch:03d}.pt"),
+        )
     return model
 
 
@@ -68,7 +79,7 @@ if __name__ == "__main__":
                         default="data/flickr30k_clip_embeddings.pkl")
     parser.add_argument("--output_dir", type=str, default="output")
     parser.add_argument("--prefix_length", type=int, default=6)
-    parser.add_argument("--epochs", type=str, default=12)
+    parser.add_argument("--epochs", type=str, default=10)
     args = parser.parse_args()
 
     dataset = FlickrDataset(args.data_path, args.prefix_length)
