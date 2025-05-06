@@ -3,7 +3,7 @@ import numpy as np
 from transformers.models.gpt2 import GPT2Tokenizer
 from cog import BasePredictor, Input, Path
 from models import ClipCaptionModel
-from prepare_data import load_clip_model, load_clip_processor
+from prepare_data import load_clip_model, load_clip_processor, load_flickr30k_dataset
 import io
 import argparse
 from PIL import Image
@@ -105,10 +105,10 @@ class Predictor(BasePredictor):
 
     def predict(self, image: str, prompt: str):
         print("image", image)
-        if image.startswith("http"):
-            image = Image.open(urlopen(image)).convert("RGB")
-        else:
-            image = Image.open(image).convert("RGB")
+        # if image.startswith("http"):
+        #     image = Image.open(urlopen(image)).convert("RGB")
+        # else:
+        # image = Image.open(image).convert("RGB")
         processed_images = self.image_processor(
             images=image, return_tensors="pt").to(self.device)
         with torch.no_grad():
@@ -124,8 +124,8 @@ class Predictor(BasePredictor):
             embed=prefix_embed,
             beam_size=self.beam_size,
             prompt=prompt,
-            entry_length=60,
-            temperature=1.2,
+            entry_length=20,
+            temperature=1.5,
 
         )
 
@@ -151,9 +151,12 @@ def main():
 
     # Generate caption
 
+    dataset = load_flickr30k_dataset()["test"]
+    image = dataset[0]["image"]
+
     captions = predictor.predict(
-        image=args.image,
-        prompt="What's up",
+        image=image,
+        prompt="",
     )
 
     # Print results
