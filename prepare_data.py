@@ -24,6 +24,14 @@ def load_clip_processor():
 # load model from clip
 
 
+def load_ms_coco_dataset():
+    dataset = load_dataset("shunk031/MSCOCO",
+                           year=2017,
+                           coco_task="captions",)
+    return dataset
+# load preprocessor from clip
+
+
 def load_clip_model():
     model_name = "openai/clip-vit-base-patch32"
     model = CLIPModel.from_pretrained(model_name)
@@ -48,7 +56,7 @@ def create_clip_embeddings():
 
     # Load dataset, model and processor
     print("Loading Flickr30K dataset...")
-    dataset = load_flickr30k_dataset()["test"]
+    dataset = load_ms_coco_dataset()["train"]
 
     print("Loading CLIP model and processor...")
     processor = load_clip_processor()
@@ -89,6 +97,7 @@ def create_clip_embeddings():
         # Store all captions (each image in Flickr30K has multiple captions)
         for caption in batch["caption"]:
             captions.append(caption)
+            print(f"Processed caption: {caption}", len(caption))
 
          # Save intermediate results every 1000 images
 
@@ -105,7 +114,7 @@ def create_clip_embeddings():
 
             # Save to interim pickle file
             interim_path = output_dir / \
-                f"flickr30k_clip_embeddings_interim.pkl"
+                f"coco_clip_embeddings_interim.pkl"
             print(f"\nSaving interim results to {interim_path}...")
             with open(interim_path, "wb") as f:
                 pickle.dump(interim_data, f)
@@ -122,7 +131,7 @@ def create_clip_embeddings():
     }
 
     # Save to pickle file
-    output_path = output_dir / "flickr30k_clip_embeddings.pkl"
+    output_path = output_dir / "coco_clip_embeddings.pkl"
     print(f"Saving embeddings to {output_path}...")
     with open(output_path, "wb") as f:
         pickle.dump(data, f)
