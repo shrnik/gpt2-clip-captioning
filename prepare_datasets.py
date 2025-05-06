@@ -24,12 +24,11 @@ class FlickrDataset(Dataset):
             self.captions_tokens = []
             max_seq_len = 0
             for captions in self.captions_raw:
-                for caption in captions:
-                    tokens = torch.tensor(self.tokenizer.encode(
-                        caption))
-                    self.captions_tokens.append(tokens)
-                    max_seq_len = max(
-                        max_seq_len, self.captions_tokens[-1].shape[0])
+                tokens = torch.tensor(self.tokenizer.encode(
+                    captions[0]))
+                self.captions_tokens.append(tokens)
+                max_seq_len = max(
+                    max_seq_len, self.captions_tokens[-1].shape[0])
             with open(f"{data_path[:-4]}_tokens.pkl", 'wb') as f:
                 pickle.dump(
                     [self.captions_tokens, max_seq_len], f)
@@ -62,7 +61,7 @@ class FlickrDataset(Dataset):
         tokens, mask = self.pad_tokens(item)
         # each image has 5 captions
         prefixIndex = item // 5
-        prefix = self.imageEmbeddings[prefixIndex]
+        prefix = self.imageEmbeddings[item]
         if self.normalize_prefix:
             prefix = prefix.float()
             prefix = prefix / prefix.norm(2, -1)
@@ -75,3 +74,13 @@ if __name__ == "__main__":
         prefix_length=6,
         normalize_prefix=True
     )
+
+    # test getitem
+    for i in range(10):
+        tokens, mask, prefix = dataset[i]
+        print(f"Tokens: {tokens}")
+        print(f"Mask: {mask}")
+        print(f"Prefix: {prefix}")
+        print(f"Tokens shape: {tokens.shape}")
+        print(f"Mask shape: {mask.shape}")
+        print(f"Prefix shape: {prefix.shape}")
