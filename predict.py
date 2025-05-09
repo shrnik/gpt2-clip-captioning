@@ -108,7 +108,6 @@ class Predictor(BasePredictor):
         self.model.to(self.device)
 
     def predict(self, image: str, prompt: str):
-        print("image", image)
         # if image.startswith("http"):
         #     image = Image.open(urlopen(image)).convert("RGB")
         # else:

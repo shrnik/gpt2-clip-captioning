@@ -40,12 +40,17 @@ def main():
     dataset = load_flickr30k_dataset()["test"]
     sample_size = 1000
     sampled_indices = random.sample(range(len(dataset)), sample_size)
-
+    rouge_scores = []
     for model_id in range(0, 12):  # Loop through 11 models
         print(f"\nEvaluating Model {model_id}")
         # Assuming a method to load specific models
         predictor.load_model(f"output/output-{model_id:03d}.pt")
-        compute_rouge_l_score(predictor, dataset, sampled_indices)
+        rouge_score = compute_rouge_l_score(
+            predictor, dataset, sampled_indices)
+        rouge_scores.append(rouge_score)
+    print("\nROUGE-L Scores for all models:")
+    for model_id, score in enumerate(rouge_scores):
+        print(f"Model {model_id}: {score:.4f}")
 
 
 if __name__ == "__main__":
