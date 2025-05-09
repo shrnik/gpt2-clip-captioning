@@ -8,6 +8,7 @@ import io
 import argparse
 from PIL import Image
 from urllib.request import urlopen
+import torch.nn.functional as nnf
 
 
 def generate_beam(
@@ -89,7 +90,7 @@ def generate_beam(
 
 
 class Predictor(BasePredictor):
-    def setup(self):
+    def setup(self, modelPath: str = "output/output-011.pt"):
         self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
         self.image_processor = load_clip_processor()
@@ -98,8 +99,11 @@ class Predictor(BasePredictor):
         self.clip_model = load_clip_model().to(self.device)
         self.prefix_length = 6
         self.model = ClipCaptionModel(self.prefix_length)
+        self.load_model(modelPath)
+
+    def load_model(self, modelPath: str):
         self.model.load_state_dict(torch.load(
-            "output/output-011.pt", map_location=self.device))
+            modelPath, map_location=self.device))
         self.model.eval()
         self.model.to(self.device)
 
@@ -115,6 +119,8 @@ class Predictor(BasePredictor):
             prefixes = self.clip_model.get_image_features(**processed_images)
             print(prefixes[0].shape)
             self.gpt_embedding_size = self.model.gpt.transformer.wte.weight.shape[1]
+            # print(prefixes[0])
+            prefixes = prefixes / prefixes.norm(dim=1, keepdim=True)
             prefix_embed = self.model.projector(
                 prefixes[0]).view(-1, self.prefix_length, self.gpt_embedding_size)
 
@@ -122,10 +128,9 @@ class Predictor(BasePredictor):
             self.model,
             self.tokenizer,
             embed=prefix_embed,
-            beam_size=self.beam_size,
             prompt=prompt,
             entry_length=20,
-            temperature=1.5,
+            temperature=1,
 
         )
 
@@ -133,7 +138,7 @@ class Predictor(BasePredictor):
 def main():
     parser = argparse.ArgumentParser(
         description="Generate captions for images using GPT2-CLIP")
-    parser.add_argument("--image", type=str, required=True,
+    parser.add_argument("--image", type=str, required=False,
                         help="Path to the input image")
     parser.add_argument("--beam-size", type=int, default=5,
                         help="Beam size for generation")
@@ -152,7 +157,12 @@ def main():
     # Generate caption
 
     dataset = load_flickr30k_dataset()["test"]
-    image = dataset[0]["image"]
+    image = dataset[111]["image"]
+    # show image
+    captions_originals = dataset[111]["caption"]
+    print("Original Captions:")
+    for i, caption in enumerate(captions_originals):
+        print(f"{i+1}. {caption}")
 
     captions = predictor.predict(
         image=image,
@@ -161,8 +171,9 @@ def main():
 
     # Print results
     print("\nGenerated Captions:")
-    for i, caption in enumerate(captions):
-        print(f"{i+1}. {caption}")
+    # for i, caption in enumerate(captions):
+    #     print(f"{i+1}. {caption}")
+    print(captions)
 
 
 if __name__ == "__main__":
